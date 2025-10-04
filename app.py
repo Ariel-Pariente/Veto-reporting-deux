@@ -47,11 +47,23 @@ openai_client: Optional[OpenAI] = None
 
 
 def load_api_key() -> Optional[str]:
+    # 1) Variable d'environnement
     key = os.environ.get("OPENAI_API_KEY")
-    if key:
-        key = key.strip()
-        if key:
-            return key
+    if key and key.strip():
+        return key.strip()
+
+    # 2) Secrets Streamlit (déploiement Streamlit Cloud)
+    try:
+        if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"]:
+            sk = str(st.secrets["OPENAI_API_KEY"]).strip()
+            if sk:
+                os.environ["OPENAI_API_KEY"] = sk
+                return sk
+    except Exception:
+        # st.secrets peut ne pas être disponible hors contexte Streamlit
+        pass
+
+    # 3) Fichier local (non commité grâce au .gitignore)
     if API_KEY_FILE.exists():
         for line in API_KEY_FILE.read_text(encoding="utf-8").splitlines():
             s = line.strip()
@@ -496,4 +508,3 @@ if analysis:
     )
 
 st.caption("Outil d’aide à la décision — ne remplace pas le jugement clinique.")
-
