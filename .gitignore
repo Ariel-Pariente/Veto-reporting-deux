@@ -1,0 +1,16 @@
+# Ignore local API keys and secrets
+openai_api_key.txt
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
+
+# Streamlit local state
+.streamlit/
